@@ -1,0 +1,156 @@
+<html><script>
+counter = 0;
+field = new Array();
+for (var i=0;i<9;i++) {
+	field[i] = new Array();
+	for (var j=0;j<9;j++) {
+		field[i][j] = 0;
+	}
+}
+
+
+field[0][1] = 2;
+field[0][6] = 8;
+field[0][8] = 3;
+
+field[1][0] = 4;
+field[1][2] = 6;
+field[1][4] = 3;
+field[1][5] = 2;
+
+field[2][0] = 3;
+field[2][1] = 1;
+field[2][4] = 4;
+field[2][5] = 8;
+field[2][7] = 9;
+
+field[3][1] = 7;
+field[3][2] = 8;
+field[3][5] = 3;
+field[3][6] = 4;
+field[3][7] = 5;
+
+
+field[4][2] = 2;
+field[4][4] = 1;
+field[4][8] = 8;
+
+field[5][0] = 1;
+field[5][3] = 8;
+field[5][5] = 6;
+field[5][8] = 9;
+
+
+field[6][5] = 9;
+field[6][6] = 6;
+
+field[7][4] = 7;
+
+field[8][0] = 5;
+field[8][1] = 6;
+field[8][7] = 7;
+
+
+showIt();
+
+
+
+
+var ok = solve(0,0,1,1);
+if (ok==true)
+	showIt();
+else {
+	alert("unsolvable!");
+}
+
+
+
+function solve(i,j,value,level) {
+	//console.log("Starting Level:" + level + " value:"+value);
+	//console.log("Counter:" + counter++);
+	//showIt();
+	if (value > 9 || value < 1) return false; // no suitable number found.
+
+	var isOk = false;
+	var isFixed = false;
+	var rowChange = i == 8;
+	var nextI = rowChange ? 0 : i + 1;
+	var nextJ = rowChange ? j + 1 : j;
+	//console.log("nextI/nextJ: " + nextI, nextJ)
+
+	if (field[i][j] > 0 && j < 8 && i < 8) {
+		return solve(nextI,nextJ,1, level + 1); // skip already solved fields.
+	} else if (field[i][j] > 0 && j == 8 && i ==8) {
+		return true; // special case last field is set.
+	} 
+
+	else if (check(value,i,j)) {
+		field[i][j] = value; // save value
+		if (j==8 && i ==8) return true; // solved!
+		// start solving the next field
+		isOk = solve(nextI, nextJ, 1, level + 1);
+		//if (isOk == "solved") return "solved";
+	}
+
+	if (isOk) return true; // otherwise fallback to the next value.
+
+	//console.log("backtrack!");
+	// the given tried path did not solve the sudoku. try with a higher value.
+	field[i][j] = 0;
+
+	isOk = solve(i,j, value + 1, level + 1);
+	return isOk;
+
+}
+
+function check(value, oi,oj) {
+	// check row
+	for (i=0;i<9;i++)
+		if (value == field[i][oj]) return false;
+	
+
+	// check column
+	for (j=0;j<9;j++)
+		if (value == field[oi][j]) return false;
+	// check field
+	
+	var startX = parseInt(oi/3)*3;
+	var startY = parseInt(oj/3)*3;
+	for (x = startX;x<startX+3;x++) {
+		for (y=startY;y<startY+3;y++)
+			if (field[x][y] == value)
+				return false; 
+	}
+
+	return true;
+
+/*
+	// because we did all checks now, we have to evalulate the next round.
+	if (oi == 8 && oj == 8) return true; // finished.
+
+	if (oi == 8) return solve(value, 0, oj + 1);
+
+	return solve(value, oi, oj);
+*/
+
+}
+
+function showIt() {
+	var row = "...";
+	for (var i=0;i<9;i++) {
+		console.log("------  ------   ------ ")
+
+		row = "";
+		for (var j=0;j<9;j++) {
+			var sep = (j+1)%3 ? "," : " | ";
+			row += field[i][j] + sep;
+		}
+		console.log(row);
+
+
+	}
+	console.log("------------------------")
+
+}
+
+</script></html>
