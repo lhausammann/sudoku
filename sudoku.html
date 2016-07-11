@@ -66,7 +66,6 @@ function solve(i,j,value,level) {
 	if (value > 9 || value < 1) return false; // no suitable number found.
 
 	var isOk = false;
-	var isFixed = false;
 	var rowChange = i == 8;
 	var nextI = rowChange ? 0 : i + 1;
 	var nextJ = rowChange ? j + 1 : j;
@@ -94,8 +93,8 @@ function solve(i,j,value,level) {
 	field[i][j] = 0;
 
 	isOk = solve(i,j, value + 1, level + 1);
+	
 	return isOk;
-
 }
 
 /*
@@ -109,7 +108,9 @@ function check(value, oi,oj) {
 
 	// check column
 	for (j=0;j<9;j++)
-		if (value == field[oi][j]) return false;
+		if (value == field[oi][j]) 
+			
+		    return false;
 
 	// check field
 	var startX = parseInt(oi / 3) * 3;
@@ -117,6 +118,7 @@ function check(value, oi,oj) {
 	for (x = startX;x<startX + 3;x++)
 		for (y=startY;y<startY + 3;y++)
 			if (field[x][y] == value)
+			
 				return false; 
 	
 	return true;
