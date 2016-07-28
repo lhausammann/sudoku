@@ -1,0 +1,118 @@
+<html><script>
+// NIM
+// Each player can take one or two items from the stack.
+// Try a minimax solution.
+
+
+const COMPUTER = -1;
+const HUMAN = 1;
+
+//var stack = Math.floor(Math.random() * 19) + 1;
+var stack = Math.round(Math.random(20) * 10) + 7;
+//var stack = 5;
+var round =0;
+
+function getName(player) {
+	if (player == COMPUTER) return " Computer ";
+	if (player == HUMAN) return " Human ";
+}
+
+function skip() {
+	var enemyMove = getMove(stack, -1);
+	stack = stack + enemyMove;
+	updateDisp(0, enemyMove);
+}
+
+function takeOne() {
+	stack-=1;
+	var enemyMove = getMove(stack, COMPUTER);
+	stack = stack + enemyMove;
+	updateDisp(1, enemyMove);
+}
+
+function takeTwo() {
+	stack-=2;
+	var enemyMove = getMove(stack, COMPUTER);
+	stack = stack + enemyMove;
+	updateDisp(2, enemyMove);
+}
+
+function takeThree() {
+	stack-=3
+	var enemyMove = getMove(stack, COMPUTER);
+	stack = stack + enemyMove;
+	updateDisp(3, enemyMove);
+}
+
+function updateDisp(you, enemy) {
+	round++;
+	document.getElementById("play").innerHTML = stack;
+	document.getElementById("info").innerHTML = getName(1) + "took:" + you + " " + getName(-1) + " took:"+ enemy + " in round: "+ round;
+}
+
+function getMove(value, player, level) {
+	var a = calcMove(value - 1, player,0);
+	var b = calcMove(value -2, player,0);
+	var c = calcMove(value -3, player,0)
+
+	// translate the move to the number.
+	if (a >= b && a >=c) return -1;
+	if (b >= c && b >= a) return -2;
+	if (c >=a && c >= b) return -3;
+}
+
+function calcMove(value, player, level) {
+	console.log(level);
+	// go through the whole tree with that decision
+	/* the following ranking assumes
+	 * its better to have shorter wins (on a shorter path) than larger ones */
+	if (value==1) return 100 / level; // we want the shortest parths rank higher, therefore divide by current level.
+	if (value < 1) return -100  / level; // here we want the longer path  rank higher, therefore divide by current level 
+
+	var indent = new Array(level * 5).join(" ");
+
+	console.log(indent + "calculate move for " + getName(player) + ": " + value + ": take one" )
+	var a = calcMove(value -1, -player, level+1); // variante a
+	console.log(indent + "calculate move for " + getName(player) + ": " + value + ": take two")
+	
+
+	var b = calcMove(value -2, -player, level+1); // variante b
+		console.log(indent + "calculate move for " + getName(player) + ": " + value + ": take three")
+
+	var c = calcMove(value -3, -player, level+1);
+	
+	console.log(indent + "result:"+player + ":");
+	console.log(indent + "Take one:" + a + " / Take two:" + b + " / Take three:"+c);
+	
+	if (player==1) {
+		return Math.max(a,b,c);
+	}
+
+	console.log(indent + "enemy took other");
+	return Math.min(a,b,c);
+
+}
+
+</script>
+<h1>Nim</h1>
+<h2>Current
+<span id="play">
+	<script>document.write(stack);</script>
+</span>
+</h2>
+<p id="info"></p>
+<a href="#" onclick="skip()">Skip</a>
+<a href="#" onclick="takeOne()">Nimm 1</a>
+<a href="#" onclick="takeTwo()">Nimm 2</a>
+<a href="#" onclick="takeThree()">Nimm 3</a>
+
+
+
+</html>
+
+
+
+
+
+
+
