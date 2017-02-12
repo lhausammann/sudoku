@@ -50,7 +50,11 @@ field[7][4] = 7;
 
 field[8][0] = 5;
 field[8][1] = 6;
-field[8][7] = 7;
+field[8][6] = 9;
+field[8][7] = 8;
+field[8][8] = 7;
+
+
 
 showIt();
 var ok = solveSudoku();
@@ -65,38 +69,34 @@ function solveSudoku() {
 }
 
 function solve(i,j,value,level) {
-	if (value > 9 || value < 1) return false; // no suitable number found.
-
-	var isOk = false;
 	var rowChange = i == 8;
 	var nextI = rowChange ? 0 : i + 1;
 	var nextJ = rowChange ? j + 1 : j;
 
-	// check if field has been filled already (set by default)
-	// Note: it's assumed pre-filled fields are valid, so no checks are made.
-	if (field[i][j] > 0 && j < 8 && i < 8) {
-		return solve(nextI,nextJ,1, level + 1); // skip already solved fields.
-	} else if (field[i][j] > 0 && j == 8 && i ==8) {
-		return true; // solved! - special case last field is set.
-	} 
+	// skip pre-filled fields starting with a new value on the next field.
+	if (field[i][j] > 0) {
+		
+		return solve(nextI,nextJ,1, level + 1); // skip already solved fields and recurse.
+	}  
 
-	// try next value
-	else if (check(value,i,j)) {
+	// try given value
+	if (check(value,i,j)) {
 		field[i][j] = value; // save value
-		if (j==8 && i ==8) return true; // solved!
+		if (j == 8 && i == 8) return true; // solved!
+		if (j == 8 && i == 7 && field[8][8] > 0) return true; // solved! - because last field pre-filled out.
 		// could work -- start solving the next field
-		isOk = solve(nextI, nextJ, 1, level + 1);
+		if (true == solve(nextI, nextJ, 1, level + 1)) { // descend to next field...
+			// path solves the sudoku
+			return true;
+		}
+		// else this way does not work we clear the path below and increment value
 	}
-
-	// path solves the sudoku
-	if (isOk) return true; // this path has been solved, return result back
-
+	// else check was not successful we clear the path below and incrment value
+	
 	// erase this path and try another value.
 	field[i][j] = 0;
-
-	isOk = solve(i,j, value + 1, level + 1);
-	
-	return isOk;
+	// no need to recurse if value is already 9 (all values tested), otherwise recurse.
+	return value == 9 ? false : solve(i,j, value + 1, level + 1); 
 }
 
 /*
